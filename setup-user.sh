@@ -38,7 +38,6 @@ fi
 # 1. Pacotes do sistema
 # ============================================================
 echo ">> Instalando dependências do sistema..."
-apt update
 apt install -y curl git lsof build-essential ca-certificates
 
 # ============================================================
