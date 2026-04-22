@@ -10,7 +10,6 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # Detecta diretório do script de forma robusta
-# (funciona tanto em execução direta quanto via pipe)
 SCRIPT_PATH="${BASH_SOURCE[0]:-$0}"
 SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" 2>/dev/null && pwd)"
 SCRIPT_DIR="${SCRIPT_DIR:-$PWD}"
@@ -21,7 +20,6 @@ else
   TTY_IN=/dev/tty
 fi
 
-# Aceita env vars do bootstrap ou pergunta interativo
 USERNAME="${VPS_SETUP_USERNAME:-}"
 EXTRA_KEY="${VPS_SETUP_EXTRA_KEY:-}"
 
@@ -36,12 +34,16 @@ if [[ ! "$USERNAME" =~ ^[a-z_][a-z0-9_-]*$ ]]; then
   exit 1
 fi
 
-# Resto igual ao anterior (pacotes, adduser, sudo, ssh, linger)
-echo ">> Atualizando sistema e instalando dependências..."
+# ============================================================
+# 1. Pacotes do sistema
+# ============================================================
+echo ">> Instalando dependências do sistema..."
 apt update
-apt upgrade -y
 apt install -y curl git lsof build-essential ca-certificates
 
+# ============================================================
+# 2. Cria usuário
+# ============================================================
 if id "$USERNAME" &>/dev/null; then
   echo ">> Usuário '$USERNAME' já existe, pulando adduser."
 else
@@ -49,12 +51,18 @@ else
   adduser --disabled-password --gecos "" "$USERNAME"
 fi
 
+# ============================================================
+# 3. Sudo NOPASSWD
+# ============================================================
 echo ">> Configurando sudo NOPASSWD..."
 usermod -aG sudo "$USERNAME"
 echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" > "/etc/sudoers.d/$USERNAME"
 chmod 440 "/etc/sudoers.d/$USERNAME"
 visudo -c -f "/etc/sudoers.d/$USERNAME" >/dev/null
 
+# ============================================================
+# 4. Chaves SSH
+# ============================================================
 USER_HOME="/home/$USERNAME"
 USER_SSH="$USER_HOME/.ssh"
 mkdir -p "$USER_SSH"
@@ -79,10 +87,15 @@ chown -R "$USERNAME:$USERNAME" "$USER_SSH"
 chmod 700 "$USER_SSH"
 chmod 600 "$USER_SSH/authorized_keys"
 
+# ============================================================
+# 5. Linger
+# ============================================================
 echo ">> Habilitando linger..."
 loginctl enable-linger "$USERNAME"
 
-# Instala stack como o novo user
+# ============================================================
+# 6. Instala stack como o novo user
+# ============================================================
 INSTALL_SCRIPT_LOCAL="$SCRIPT_DIR/install-openclaw.sh"
 INSTALL_SCRIPT_DEST="$USER_HOME/install-openclaw.sh"
 
@@ -99,6 +112,9 @@ else
   sudo -u "$USERNAME" -i bash "$INSTALL_SCRIPT_DEST"
 fi
 
+# ============================================================
+# 7. Próximos passos
+# ============================================================
 HOST="$(hostname -I 2>/dev/null | awk '{print $1}')"
 cat <<EOF
 
