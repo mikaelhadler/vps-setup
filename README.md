@@ -1,5 +1,4 @@
-```markdown
-# vps-setup
+# VPS Setup
 
 Scripts de bootstrap para VPS Debian/Ubuntu recém-provisionadas.
 
@@ -74,11 +73,6 @@ Para reprodutibilidade, referencie um commit específico em vez da branch `main`
 ```bash
 curl -fsSL https://raw.githubusercontent.com/mikaelhadler/vps-setup/<commit_sha>/setup-user.sh \
   | sudo bash -s openclaw
-```
-
-## Licença
-
-MIT
 ```
 
 Algumas notas sobre escolhas que fiz:
