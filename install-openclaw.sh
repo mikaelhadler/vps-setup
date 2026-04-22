@@ -24,18 +24,22 @@ else
   echo ">> nvm já instalado, pulando."
 fi
 
-# Carrega nvm no shell atual
+# ============================================================
+# 2. Carrega nvm + Node LTS (com set +u por compatibilidade)
+# ============================================================
+# nvm.sh usa variáveis não definidas internamente, incompatível com set -u
+set +u
 export NVM_DIR="$HOME/.nvm"
 # shellcheck disable=SC1091
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-# ============================================================
-# 2. Node LTS
-# ============================================================
-echo ">> Instalando Node LTS..."
-nvm install --lts
-nvm use --lts
-nvm alias default 'lts/*'
+echo ">> Instalando Node LTS (v22)..."
+# Fixa em 22 (LTS atual codinome 'iron') em vez de --lts,
+# que em algumas versões do nvm pega a 'current'
+nvm install 22
+nvm use 22
+nvm alias default 22
+set -u
 
 echo ">> Node: $(node --version)"
 echo ">> npm: $(npm --version)"
@@ -47,7 +51,6 @@ echo ">> Configurando npm prefix local..."
 mkdir -p "$HOME/.npm-global"
 npm config set prefix "$HOME/.npm-global"
 
-# Adiciona ao PATH no bashrc (só se ainda não estiver)
 BASHRC="$HOME/.bashrc"
 PATH_LINE='export PATH=~/.npm-global/bin:$PATH'
 if ! grep -qxF "$PATH_LINE" "$BASHRC" 2>/dev/null; then
@@ -57,19 +60,18 @@ else
   echo ">> PATH já presente no .bashrc, pulando."
 fi
 
-# Aplica no shell atual (pra os comandos npm abaixo funcionarem)
 export PATH="$HOME/.npm-global/bin:$PATH"
 
 # ============================================================
 # 4. Claude CLI + OpenClaw
 # ============================================================
-echo ">> Instalando Claude CLI e OpenClaw globalmente (no prefix local)..."
+echo ">> Instalando Claude CLI e OpenClaw..."
 npm install -g @anthropic-ai/claude-code openclaw
 
 echo
 echo ">> Versões instaladas:"
-echo "   claude: $(claude --version 2>/dev/null || echo 'NÃO ENCONTRADO')"
+echo "   claude:   $(claude --version 2>/dev/null || echo 'NÃO ENCONTRADO')"
 echo "   openclaw: $(openclaw --version 2>/dev/null || echo 'NÃO ENCONTRADO')"
 
 echo
-echo ">> Instalação concluída. Próximos passos manuais no README do setup."
+echo ">> Instalação concluída."
