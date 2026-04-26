@@ -45,24 +45,6 @@ echo ">> Node: $(node --version)"
 echo ">> npm: $(npm --version)"
 
 # ============================================================
-# 3. npm prefix local (evita EACCES em installs globais)
-# ============================================================
-echo ">> Configurando npm prefix local..."
-mkdir -p "$HOME/.npm-global"
-npm config set prefix "$HOME/.npm-global"
-
-BASHRC="$HOME/.bashrc"
-PATH_LINE='export PATH=~/.npm-global/bin:$PATH'
-if ! grep -qxF "$PATH_LINE" "$BASHRC" 2>/dev/null; then
-  echo "$PATH_LINE" >> "$BASHRC"
-  echo ">> PATH adicionado ao .bashrc"
-else
-  echo ">> PATH já presente no .bashrc, pulando."
-fi
-
-export PATH="$HOME/.npm-global/bin:$PATH"
-
-# ============================================================
 # 4. Claude CLI + OpenClaw
 # ============================================================
 echo ">> Instalando Claude CLI e OpenClaw..."
