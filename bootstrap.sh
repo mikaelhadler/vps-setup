@@ -71,8 +71,8 @@ done
 
 echo
 echo ">> Iniciando setup com:"
-echo "   usuário: $USERNAME"
-echo "   chave extra: $([[ -n "$EXTRA_KEY" ]] && echo 'sim' || echo 'não')"
+echo "   Usuário: $USERNAME"
+echo "   Chave extra: $([[ -n "$EXTRA_KEY" ]] && echo 'sim' || echo 'não')"
 echo
 
 printf "Confirmar e prosseguir? [s/N]: "

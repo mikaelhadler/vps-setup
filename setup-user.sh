@@ -132,11 +132,6 @@ Próximos passos manuais:
      echo 'export CLAUDE_CODE_OAUTH_TOKEN="sk-ant-oat01-..."' >> ~/.bashrc
      source ~/.bashrc
 
-     mkdir -p ~/.config/environment.d/
-     echo 'CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat01-...' > ~/.config/environment.d/claude.conf
-
-     systemctl --user set-environment CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat01-...
-
   6. openclaw onboard
   7. openclaw gateway install
      systemctl --user enable --now openclaw-gateway.service
